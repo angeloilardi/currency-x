@@ -1,10 +1,11 @@
 <script>
 	export let data;
+	const currencies = Object.keys(data.data)
 </script>
 
 <svelte:head>
-	<title>Home</title>
-	<meta name="description" content="Svelte demo app" />
+	<title>Currency X</title>
+	<meta name="description" content="Real time exchange rates at your fingertips" />
 </svelte:head>
 
 <section>
@@ -33,19 +34,27 @@
 	<form action="" method="post" class="mx-auto max-w-[80%]">
 		<div class="mb-3">
 			<label for="base-currency" class="mb-2 block text-white">Base Currency</label>
-			<select name="base-currency" id="base-currency" class="w-full rounded-md">
-				{#each Object.values(data.data) as currency}
-					<option>{currency.name}</option>
+			<select name="base-currency" id="base-currency" class="w-full rounded-md p-1">
+				{#each currencies as currency}
+					<option>{currency}</option>
 				{/each}
 			</select>
 		</div>
-		<div class="">
-			<label for="base-currency" class="mb-2 block text-white">Amount</label>
-			<input type="text" name="base-currency" id="base-currency mb-3" class="w-full rounded-md" />
+		<div class="mb-3">
+			<label for="amount-to-convert" class="mb-2 block text-white">Amount to convert</label>
+			<input type="number" name="amount-to-convert" id="amount-to-convert" class="w-full rounded-md p-1" />
 		</div>
 		<div class="mt-16">
-			<label for="base-currency" class="mb-2 block text-white">Convert to</label>
-			<input type="text" name="base-currency" id="base-currency mb-3" class="w-full rounded-md" />
+			<label for="target-currency" class="mb-2 block text-white">Convert to</label>
+			<select name="target-currency" id="target-currency" class="w-full rounded-md p-1">
+				{#each currencies as currency}
+					<option>{currency}</option>
+				{/each}
+			</select>
+		</div>
+		<div class="mt-3">
+			<label for="amount-to-convert" class="mb-2 block text-white">Converted amount</label>
+			<input type="number" name="amount-to-convert" id="amount-to-convert" class="w-full rounded-md p-1" />
 		</div>
 	</form>
 </section>
