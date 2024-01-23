@@ -1,46 +1,33 @@
-<script>
+<script lang="ts">
 	import currencies from '$lib/data/currencies.json';
 	import { PUBLIC_API_KEY } from '$env/static/public';
 
+	async function fetchConversion(baseCurrency: string, targetCurrency: string) {
+		if (baseCurrency && targetCurrency) {
+			const response = await fetch(
+				`https://api.freecurrencyapi.com/v1/latest?apikey=${PUBLIC_API_KEY}&currencies=${targetCurrency}&base_currency=${baseCurrency}`
+			);
+	
+			if (!response.ok) {
+				throw new Error(`HTTP error: ${response.status}`);
+			}
+			const result = await response.json();
+			console.log(result);
+			console.log(targetCurrency);
+	
+			conversionRate = result.data[targetCurrency];
+			console.log(conversionRate);
+		}
+		}
 
-	async function fetchConversion (
-		/** @type {string} */ baseCurrency,
-		/** @type {string} */ targetCurrency
-	) {
-		const response = await fetch(
-        `https://api.freecurrencyapi.com/v1/latest?apikey=${PUBLIC_API_KEY}&currencies=${targetCurrency}&base_currency=${baseCurrency}`
-    );
+	let baseCurrency: string;
 
-    if (!response.ok) {
-        throw new Error(`HTTP error: ${response.status}`)
-    }
-    const result = await response.json();
-	console.log(result);
-	console.log(targetCurrency);
-		
-	conversionRate = result.data[targetCurrency]
-	console.log(conversionRate);
+	let targetCurrency: string| null = null;
 
+	let amountToConvert: number|null = null;
 
-	};
-
-	/**
-	 * @type {string}
-	 */
-	let baseCurrency = '';
-	/**
-	 * @type {string}
-	 */
-	let targetCurrency;
-	/**
-	 * @type {number}
-	 */
-	let amountToConvert;
-
-
-	// let conversionRate = data
-	// console.log(conversionRate)
-	let conversionRate;
+	let conversionRate: number;
+	let convertedAmount:number|null = null;
 
 	$: convertedAmount = amountToConvert * conversionRate;
 </script>
@@ -81,7 +68,7 @@
 				id="base-currency"
 				class="w-full rounded-md p-1"
 				bind:value={baseCurrency}
-				on:change={fetchConversion(baseCurrency,targetCurrency)}
+				on:change={fetchConversion(baseCurrency, targetCurrency)}
 			>
 				{#each Object.keys(currencies.data) as currency}
 					<option>{currency}</option>
@@ -98,21 +85,26 @@
 				bind:value={amountToConvert}
 			/>
 		</div>
-		<div class="mt-16">
+		<div class="mt-5">
 			<label for="target-currency" class="mb-2 block text-white">Convert to</label>
 			<select
 				name="target-currency"
 				id="target-currency"
 				class="w-full rounded-md p-1"
 				bind:value={targetCurrency}
-				on:change={fetchConversion(baseCurrency,targetCurrency)}
+				on:change={fetchConversion(baseCurrency, targetCurrency)}
 			>
 				{#each Object.keys(currencies.data) as currency}
 					<option>{currency}</option>
 				{/each}
 			</select>
 		</div>
-		<div class="mt-3">
+		<p class="text-white mt-5">Converted Amount</p>
+		{#if amountToConvert && targetCurrency }
+			<p class="text-white">{amountToConvert} {baseCurrency} = {convertedAmount} {targetCurrency}</p>
+			<p class="text-white">Conversion rate: {conversionRate}</p>
+		{/if}
+		<!-- <div class="mt-3">
 			<label for="amount-to-convert" class="mb-2 block text-white">Converted amount</label>
 			<input
 				type="string"
@@ -121,6 +113,6 @@
 				class="w-full rounded-md p-1"
 				bind:value={convertedAmount}
 			/>
-		</div>
+		</div> -->
 	</form>
 </section>
