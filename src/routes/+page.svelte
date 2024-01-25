@@ -1,35 +1,56 @@
 <script lang="ts">
 	import currencies from '$lib/data/currencies.json';
-	import { PUBLIC_API_KEY } from '$env/static/public';
+	export let form;
+	import { enhance } from '$app/forms';
 
-	async function fetchConversion(baseCurrency: string, targetCurrency: string) {
-		if (baseCurrency && targetCurrency) {
-			const response = await fetch(
-				`https://api.freecurrencyapi.com/v1/latest?apikey=${PUBLIC_API_KEY}&currencies=${targetCurrency}&base_currency=${baseCurrency}`
-			);
-	
-			if (!response.ok) {
-				throw new Error(`HTTP error: ${response.status}`);
-			}
-			const result = await response.json();
-			console.log(result);
-			console.log(targetCurrency);
-	
-			conversionRate = result.data[targetCurrency];
-			console.log(conversionRate);
-		}
-		}
+	$: console.log(form);
 
-	let baseCurrency: string;
+	$: conversionRate = form?.values.conversionRate
+	// async function fetchConversion(baseCurrency: string, targetCurrency: string) {
+	// 	if (baseCurrency && targetCurrency) {
+	// 		const response = await fetch(
+	// 			`https://api.freecurrencyapi.com/v1/latest?apikey=${PUBLIC_API_KEY}&currencies=${targetCurrency}&base_currency=${baseCurrency}`
+	// 		);
 
-	let targetCurrency: string| null = null;
+	// 		if (!response.ok) {
+	// 			throw new Error(`HTTP error: ${response.status}`);
+	// 		}
+	// 		const result = await response.json();
+	// 		console.log(result);
+	// 		console.log(targetCurrency);
 
-	let amountToConvert: number|null = null;
+	// 		conversionRate = result.data[targetCurrency];
+	// 		console.log(conversionRate);
+	// 	}
+	// 	}
 
-	let conversionRate: number;
-	let convertedAmount:number|null = null;
+	let myForm: HTMLFormElement;
+
+	$: console.log(conversionRate);
+
+let baseCurrency = form?.values.baseCurrency ?? null
+
+let targetCurrency = form?.values.targetCurrency ?? null
+$: console.log(baseCurrency);
+$: console.log(targetCurrency);
+
+	let amountToConvert: number | null = null;
+
+	let convertedAmount: number | null = null;
 
 	$: convertedAmount = amountToConvert * conversionRate;
+
+
+	function fetchData() {
+		if (!targetCurrency || !baseCurrency) {
+			return
+		} else {
+			 myForm.submit();
+			}
+	}
+
+// $: baseCurrency = form?.values.baseCurrency
+// $: targetCurrency = form?.values.targetCurrency
 </script>
 
 <svelte:head>
@@ -60,7 +81,7 @@
 </section>
 
 <section class="mt-10">
-	<form action="" method="post" class="mx-auto max-w-[80%]">
+	<form action="/" id="myform" method="POST" class="mx-auto max-w-[80%]" use:enhance  bind:this={myForm} on:submit|preventDefault>
 		<div class="mb-3">
 			<label for="base-currency" class="mb-2 block text-white">Base Currency</label>
 			<select
@@ -68,22 +89,12 @@
 				id="base-currency"
 				class="w-full rounded-md p-1"
 				bind:value={baseCurrency}
-				on:change={fetchConversion(baseCurrency, targetCurrency)}
+				on:change={fetchData}
 			>
 				{#each Object.keys(currencies.data) as currency}
 					<option>{currency}</option>
 				{/each}
 			</select>
-		</div>
-		<div class="mb-3">
-			<label for="amount-to-convert" class="mb-2 block text-white">Amount to convert</label>
-			<input
-				type="string"
-				name="amount-to-convert"
-				id="amount-to-convert"
-				class="w-full rounded-md p-1"
-				bind:value={amountToConvert}
-			/>
 		</div>
 		<div class="mt-5">
 			<label for="target-currency" class="mb-2 block text-white">Convert to</label>
@@ -92,27 +103,37 @@
 				id="target-currency"
 				class="w-full rounded-md p-1"
 				bind:value={targetCurrency}
-				on:change={fetchConversion(baseCurrency, targetCurrency)}
+				on:change={fetchData}
 			>
 				{#each Object.keys(currencies.data) as currency}
-					<option>{currency}</option>
+					<option value={currency}>{currency}</option>
 				{/each}
 			</select>
 		</div>
-		<p class="text-white mt-5">Converted Amount</p>
-		{#if amountToConvert && targetCurrency }
-			<p class="text-white">{amountToConvert} {baseCurrency} = {convertedAmount} {targetCurrency}</p>
-			<p class="text-white">Conversion rate: {conversionRate}</p>
-		{/if}
-		<!-- <div class="mt-3">
-			<label for="amount-to-convert" class="mb-2 block text-white">Converted amount</label>
+		
+		
+		{#if form}
+			<p class="text-white mt-5">Conversion rate: 1 {baseCurrency} = {conversionRate} {targetCurrency}</p>
+			<div class="mt-5">
+			<label for="amount-to-convert" class="mb-2 block text-white">Amount to convert</label>
 			<input
-				type="string"
+				type="number"
 				name="amount-to-convert"
 				id="amount-to-convert"
 				class="w-full rounded-md p-1"
-				bind:value={convertedAmount}
+				bind:value={amountToConvert}
 			/>
-		</div> -->
+		</div>
+		{/if}
+		{#if amountToConvert}
+			<p class="text-white mt-5">
+				{amountToConvert}
+				{baseCurrency} = {convertedAmount}
+				{form?.values.targetCurrency}
+			</p>
+			
+		{/if}
+
+		<!-- <button type="submit" class="text-white">Submit</button> -->
 	</form>
 </section>
