@@ -34,7 +34,7 @@ let targetCurrency = form?.values.targetCurrency ?? null
 $: console.log(baseCurrency);
 $: console.log(targetCurrency);
 
-	let amountToConvert: number | null = null;
+	let amountToConvert = form?.values.amountToConvert ?? null
 
 	let convertedAmount: number | null = null;
 
