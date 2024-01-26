@@ -5,7 +5,7 @@
 
 	$: console.log(form);
 
-	$: conversionRate = form?.values.conversionRate
+	$: conversionRate = form?.values.conversionRate;
 	// async function fetchConversion(baseCurrency: string, targetCurrency: string) {
 	// 	if (baseCurrency && targetCurrency) {
 	// 		const response = await fetch(
@@ -26,31 +26,26 @@
 
 	let myForm: HTMLFormElement;
 
-	$: console.log(conversionRate);
+	let baseCurrency = form?.values.baseCurrency ?? null;
 
-let baseCurrency = form?.values.baseCurrency ?? null
+	let targetCurrency = form?.values.targetCurrency ?? null;
 
-let targetCurrency = form?.values.targetCurrency ?? null
-$: console.log(baseCurrency);
-$: console.log(targetCurrency);
-
-	let amountToConvert = form?.values.amountToConvert ?? null
+	let amountToConvert = form?.values.amountToConvert ?? null;
 
 	let convertedAmount: number | null = null;
 
 	$: convertedAmount = amountToConvert * conversionRate;
 
-
 	function fetchData() {
 		if (!targetCurrency || !baseCurrency) {
-			return
+			return;
 		} else {
-			 myForm.submit();
-			}
+			myForm.submit();
+		}
 	}
 
-// $: baseCurrency = form?.values.baseCurrency
-// $: targetCurrency = form?.values.targetCurrency
+	// $: baseCurrency = form?.values.baseCurrency
+	// $: targetCurrency = form?.values.targetCurrency
 </script>
 
 <svelte:head>
@@ -81,57 +76,68 @@ $: console.log(targetCurrency);
 </section>
 
 <section class="mt-10">
-	<form action="/" id="myform" method="POST" class="mx-auto max-w-[80%]" use:enhance  bind:this={myForm} on:submit|preventDefault>
-		<div class="mb-3">
-			<label for="base-currency" class="mb-2 block text-white">Base Currency</label>
-			<select
-				name="base-currency"
-				id="base-currency"
-				class="w-full rounded-md p-1"
-				bind:value={baseCurrency}
-				on:change={fetchData}
-			>
-				{#each Object.keys(currencies.data) as currency}
-					<option>{currency}</option>
-				{/each}
-			</select>
+	<form
+		action="/"
+		id="myform"
+		method="POST"
+		class="mx-auto max-w-[80%]"
+		use:enhance
+		bind:this={myForm}
+		on:submit|preventDefault
+	>
+		<div class="flex w-full flex-col gap-5 md:flex-row">
+			<div>
+				<label for="base-currency" class="mb-2 block text-white">Select Base Currency</label>
+				<select
+					name="base-currency"
+					id="base-currency"
+					class="w-full rounded-md p-1"
+					bind:value={baseCurrency}
+					on:change={fetchData}
+				>
+					{#each Object.keys(currencies.data) as currency}
+						<option>{currency}</option>
+					{/each}
+				</select>
+			</div>
+			<div>
+				<label for="target-currency" class="mb-2 block text-white">Convert to</label>
+				<select
+					name="target-currency"
+					id="target-currency"
+					class="w-full rounded-md p-1"
+					bind:value={targetCurrency}
+					on:change={fetchData}
+				>
+					{#each Object.keys(currencies.data) as currency}
+						<option value={currency}>{currency}</option>
+					{/each}
+				</select>
+			</div>
 		</div>
-		<div class="mt-5">
-			<label for="target-currency" class="mb-2 block text-white">Convert to</label>
-			<select
-				name="target-currency"
-				id="target-currency"
-				class="w-full rounded-md p-1"
-				bind:value={targetCurrency}
-				on:change={fetchData}
-			>
-				{#each Object.keys(currencies.data) as currency}
-					<option value={currency}>{currency}</option>
-				{/each}
-			</select>
-		</div>
-		
-		
+
 		{#if form}
-			<p class="text-white mt-5">Conversion rate: 1 {baseCurrency} = {conversionRate} {targetCurrency}</p>
+			<p class="mt-5 text-white">
+				Conversion rate: 1 {baseCurrency} = {conversionRate}
+				{targetCurrency}
+			</p>
 			<div class="mt-5">
-			<label for="amount-to-convert" class="mb-2 block text-white">Amount to convert</label>
-			<input
-				type="number"
-				name="amount-to-convert"
-				id="amount-to-convert"
-				class="w-full rounded-md p-1"
-				bind:value={amountToConvert}
-			/>
-		</div>
+				<label for="amount-to-convert" class="mb-2 block text-white">Amount to convert</label>
+				<input
+					type="number"
+					name="amount-to-convert"
+					id="amount-to-convert"
+					class="w-full rounded-md p-1"
+					bind:value={amountToConvert}
+				/>
+			</div>
 		{/if}
 		{#if amountToConvert}
-			<p class="text-white mt-5">
+			<p class="mt-5 text-white">
 				{amountToConvert}
 				{baseCurrency} = {convertedAmount}
 				{form?.values.targetCurrency}
 			</p>
-			
 		{/if}
 
 		<!-- <button type="submit" class="text-white">Submit</button> -->
