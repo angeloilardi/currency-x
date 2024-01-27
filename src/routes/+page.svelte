@@ -6,23 +6,6 @@
 	$: console.log(form);
 
 	$: conversionRate = form?.values.conversionRate;
-	// async function fetchConversion(baseCurrency: string, targetCurrency: string) {
-	// 	if (baseCurrency && targetCurrency) {
-	// 		const response = await fetch(
-	// 			`https://api.freecurrencyapi.com/v1/latest?apikey=${PUBLIC_API_KEY}&currencies=${targetCurrency}&base_currency=${baseCurrency}`
-	// 		);
-
-	// 		if (!response.ok) {
-	// 			throw new Error(`HTTP error: ${response.status}`);
-	// 		}
-	// 		const result = await response.json();
-	// 		console.log(result);
-	// 		console.log(targetCurrency);
-
-	// 		conversionRate = result.data[targetCurrency];
-	// 		console.log(conversionRate);
-	// 	}
-	// 	}
 
 	let myForm: HTMLFormElement;
 
@@ -45,16 +28,17 @@
 	}
 
 	function handleSwap() {
-		const cached = baseCurrency;
+		if (baseCurrency && targetCurrency && baseCurrency !== targetCurrency) {
+			const cached = baseCurrency;
 		baseCurrency = targetCurrency;
 		targetCurrency = cached;
 		setTimeout(() => {
 			fetchData()
-		}, 200);
+		}, 100);
+		}
+		
 	}
 
-	// $: baseCurrency = form?.values.baseCurrency
-	// $: targetCurrency = form?.values.targetCurrency
 </script>
 
 <svelte:head>
@@ -109,10 +93,8 @@
 					{/each}
 				</select>
 			</div>
-			{#if baseCurrency && targetCurrency}
-				<button class="w-6 h-6 bg-white self-end rounded-md p-1 hidden md:block" type="button" on:click|preventDefault={handleSwap}><img src='src/lib/images/swap-horizontal-sharp.svg' alt="">Swap currencies</button>
-				<button class="w-6 h-6 bg-white rounded-md p-1 md:hidden self-center" type="button" on:click|preventDefault={handleSwap}><img src='src/lib/images/swap-vertical-sharp.svg' alt="">Swap currencies</button>
-			{/if}
+				<button class="w-6 h-6 bg-white self-end rounded-md p-1 hidden md:block shrink-0 hover:bg-slate-200" type="button" on:click|preventDefault={handleSwap}><img src='src/lib/images/swap-horizontal-sharp.svg' alt=""><span class="sr-only">Swap currencies</span></button>
+				<button class="w-6 h-6 bg-white rounded-md p-1 md:hidden self-center shrink-0 hover:bg-slate-200" type="button" on:click|preventDefault={handleSwap}><img src='src/lib/images/swap-vertical-sharp.svg' alt=""><span class="sr-only">Swap currencies</span></button>
 			<div class="w-full">
 				<label for="target-currency" class="mb-2 block text-white">Convert to</label>
 				<select
