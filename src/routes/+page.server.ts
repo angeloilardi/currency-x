@@ -7,21 +7,29 @@ export const actions = {
         const baseCurrency = formData.get('base-currency');
         const amountToConvert = formData.get('amount-to-convert');
         const targetCurrency = formData.get('target-currency');
-        console.log(targetCurrency);
-        const response = await fetch(`https://api.freecurrencyapi.com/v1/latest?apikey=${PUBLIC_API_KEY}&currencies=${targetCurrency}&base_currency=${baseCurrency}`
+        try {
+            const response = await fetch(`https://api.freecurrencyapi.com/v1/latest?apikey=${PUBLIC_API_KEY}&currencies=${targetCurrency}&base_currency=${baseCurrency}`
 
-        )
-        const result = await response.json();
-        
-    
-        const conversionRate = result.data[targetCurrency];
+            )
+            if (!response.ok) {
+                throw new Error(`HTTP error: ${response.status}`)
+            }
+            const result = await response.json();
 
-        const values = {
-            baseCurrency,
-            targetCurrency,
-            conversionRate,
-            amountToConvert
+
+            const conversionRate = result.data[targetCurrency];
+
+            const values = {
+                baseCurrency,
+                targetCurrency,
+                conversionRate,
+                amountToConvert
+            }
+            return { success: true, values };
         }
-        return {success:true, values};
+        catch (error) {
+            console.error(error)
+            return { error: 'Unable to fetch currencies' }
+        }
     }
 }

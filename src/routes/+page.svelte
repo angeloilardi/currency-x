@@ -4,13 +4,6 @@
 	import { enhance } from '$app/forms';
 	import verticalSwap from "$lib/images/swap-vertical-sharp.svg";
 	import horizontalSwap from "$lib/images/swap-horizontal-sharp.svg";
-	console.log(Object.entries(currencies.data));
-
-	// const parsed = JSON.parse(currencies);
-
-	// console.log(parsed);
-
-	$: console.log(form);
 
 	$: conversionRate = form?.values.conversionRate;
 
@@ -111,8 +104,8 @@
 					bind:value={targetCurrency}
 					on:change={fetchData}
 				>
-					{#each Object.keys(currencies.data) as currency}
-						<option value={currency}>{currency}</option>
+					{#each Object.values(currencies.data) as currency}
+						<option value={currency.code}>{currency.code} ({currency.name})</option>
 					{/each}
 				</select>
 			</div>
