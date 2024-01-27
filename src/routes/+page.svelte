@@ -44,6 +44,15 @@
 		}
 	}
 
+	function handleSwap() {
+		const cached = baseCurrency;
+		baseCurrency = targetCurrency;
+		targetCurrency = cached;
+		setTimeout(() => {
+			fetchData()
+		}, 200);
+	}
+
 	// $: baseCurrency = form?.values.baseCurrency
 	// $: targetCurrency = form?.values.targetCurrency
 </script>
@@ -85,8 +94,8 @@
 		bind:this={myForm}
 		on:submit|preventDefault
 	>
-		<div class="flex w-full flex-col gap-5 md:flex-row">
-			<div>
+		<div class="flex w-full flex-col gap-3 md:flex-row">
+			<div class="w-full">
 				<label for="base-currency" class="mb-2 block text-white">Select Base Currency</label>
 				<select
 					name="base-currency"
@@ -100,7 +109,11 @@
 					{/each}
 				</select>
 			</div>
-			<div>
+			{#if baseCurrency && targetCurrency}
+				<button class="w-6 h-6 bg-white self-end rounded-md p-1 hidden md:block" type="button" on:click|preventDefault={handleSwap}><img src='src/lib/images/swap-horizontal-sharp.svg' alt="">Swap currencies</button>
+				<button class="w-6 h-6 bg-white rounded-md p-1 md:hidden self-center" type="button" on:click|preventDefault={handleSwap}><img src='src/lib/images/swap-vertical-sharp.svg' alt="">Swap currencies</button>
+			{/if}
+			<div class="w-full">
 				<label for="target-currency" class="mb-2 block text-white">Convert to</label>
 				<select
 					name="target-currency"
