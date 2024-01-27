@@ -113,7 +113,7 @@
 
 		{#if form}
 			<p class="mt-5 text-white">
-				Conversion rate: 1 {baseCurrency} = {conversionRate}
+				Conversion rate: 1 {baseCurrency} = {conversionRate.toFixed(6)}
 				{targetCurrency}
 			</p>
 			<div class="mt-5">
@@ -129,8 +129,7 @@
 		{/if}
 		{#if amountToConvert}
 			<p class="mt-5 text-white">
-				{amountToConvert}
-				{baseCurrency} = {convertedAmount}
+				{baseCurrency} {amountToConvert} = {convertedAmount?.toFixed(6)}
 				{form?.values.targetCurrency}
 			</p>
 		{/if}
