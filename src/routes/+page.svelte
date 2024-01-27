@@ -2,6 +2,8 @@
 	import currencies from '$lib/data/currencies.json';
 	export let form;
 	import { enhance } from '$app/forms';
+	import verticalSwap from "$lib/images/swap-vertical-sharp.svg";
+	import horizontalSwap from "$lib/images/swap-horizontal-sharp.svg";
 
 	$: console.log(form);
 
@@ -93,8 +95,8 @@
 					{/each}
 				</select>
 			</div>
-				<button class="w-6 h-6 bg-white self-end rounded-md p-1 hidden md:block shrink-0 hover:bg-slate-200" type="button" on:click|preventDefault={handleSwap}><img src='$lib/images/swap-horizontal-sharp.svg' alt=""><span class="sr-only">Swap currencies</span></button>
-				<button class="w-6 h-6 bg-white rounded-md p-1 md:hidden self-center shrink-0 hover:bg-slate-200" type="button" on:click|preventDefault={handleSwap}><img src='$lib/images/swap-vertical-sharp.svg' alt=""><span class="sr-only">Swap currencies</span></button>
+				<button class="w-6 h-6 bg-white self-end rounded-md p-1 hidden md:block shrink-0 hover:bg-slate-200" type="button" on:click|preventDefault={handleSwap}><img src={horizontalSwap} alt=""><span class="sr-only">Swap currencies</span></button>
+				<button class="w-6 h-6 bg-white rounded-md p-1 md:hidden self-center shrink-0 hover:bg-slate-200" type="button" on:click|preventDefault={handleSwap}><img src={verticalSwap} alt=""><span class="sr-only">Swap currencies</span></button>
 			<div class="w-full">
 				<label for="target-currency" class="mb-2 block text-white">Convert to</label>
 				<select
