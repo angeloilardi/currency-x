@@ -2,24 +2,15 @@
 	import currencies from '$lib/data/currencies.json';
 	export let form;
 	import { enhance } from '$app/forms';
-
 	import verticalSwap from '$lib/images/swap-vertical-sharp.svg';
 	import horizontalSwap from '$lib/images/swap-horizontal-sharp.svg';
-	console.log(form);
 
 	$: conversionRate = form?.conversionRate;
 
-	console.log(conversionRate);
-
 	const formatter = new Intl.NumberFormat(undefined, {
-//   style: 'currency',
-//   currency: 'USD',
-
-  // These options are needed to round to whole numbers if that's what you want.
-minimumFractionDigits: 2, 
-  // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
-maximumFractionDigits: 2, 
-});
+		minimumFractionDigits: 2,
+		maximumFractionDigits: 2
+	});
 
 	let myForm: HTMLFormElement;
 
@@ -29,7 +20,7 @@ maximumFractionDigits: 2,
 
 	let amountToConvert = form?.amountToConvert ?? null;
 
-	$: formattedAmount = formatter.format(amountToConvert)
+	$: formattedAmount = formatter.format(amountToConvert);
 
 	let convertedAmount: number | null = null;
 
@@ -57,18 +48,6 @@ maximumFractionDigits: 2,
 			}, 100);
 		}
 	}
-
-	// function swap(callback: { (): void; (): void; }) {
-	// 	const cached = baseCurrency;
-	// 	baseCurrency = targetCurrency;
-	// 	targetCurrency = cached;
-	// 	console.log('done');
-	// 	callback();
-	// }
-
-	// function handleSwap() {
-	// 	swap(fetchData);
-	// }
 </script>
 
 <svelte:head>
@@ -81,7 +60,7 @@ maximumFractionDigits: 2,
 		<div class="flex h-full items-center justify-center">
 			<div class="flex basis-2/3 flex-col justify-center">
 				<div class="h-[42px] w-[258px] font-piazzolla text-2xl font-bold tracking-wider text-white">
-					🅲🆄🆁🆁🅴🅽🅲🆈-🆇
+					<a href="/">🅲🆄🆁🆁🅴🅽🅲🆈-🆇</a>
 				</div>
 				<h1
 					class="h-[78px] w-[196px] text-center font-piazzolla text-base font-semibold text-white"
@@ -148,7 +127,7 @@ maximumFractionDigits: 2,
 		</div>
 
 		{#if form}
-			<p class="mt-5 text-white">
+			<p class="mt-5 text-white italic">
 				Conversion rate: 1 {baseCurrency} = {conversionRate.toFixed(6)}
 				{targetCurrency}
 			</p>

@@ -1,5 +1,9 @@
 import { PUBLIC_API_KEY } from '$env/static/public'
 
+// export function load() {
+    
+// }
+
 export const actions = {
     default: async ({ request }) => {
         // read the form data sent by the browser
