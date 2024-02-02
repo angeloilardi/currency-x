@@ -15,21 +15,58 @@ export const actions = {
                 throw new Error(`HTTP error: ${response.status}`)
             }
             const result = await response.json();
-
+            console.log(baseCurrency);
 
             const conversionRate = result.data[targetCurrency];
+            console.log(conversionRate);
 
-            const values = {
-                baseCurrency,
+            return {
+                success: true, baseCurrency,
                 targetCurrency,
                 conversionRate,
-                amountToConvert
-            }
-            return { success: true, values };
+                amountToConvert};
         }
         catch (error) {
             console.error(error)
             return { error: 'Unable to fetch currencies' }
         }
-    }
+    },
+
+    // historical: async ({ request }) => {
+    //     const formData = await request.formData()
+    //     const baseCurrency = formData.get('base-currency');
+    //     const targetCurrency = formData.get('target-currency');
+    //     const date = formData.get('date');
+    //     try {
+    //         const response = await fetch(`https://api.freecurrencyapi.com/v1/historical?apikey=${PUBLIC_API_KEY}&currencies=${targetCurrency}&base_currency=${baseCurrency}&date=${date}`
+
+    //         )
+    //         if (!response.ok) {
+    //             throw new Error(`HTTP error: ${response.status}`)
+    //         }
+    //         const result = await response.json();
+    //         console.log(result);
+    //         console.log(baseCurrency);
+    //         console.log(targetCurrency);
+    //         console.log(date);
+    //         console.log(Object.values(result));
+
+
+    //         const historicalRate = result.data[date][targetCurrency];
+    //         console.log(historicalRate);
+
+    //         return {
+    //             success: true, 
+    //             baseCurrency,
+    //             targetCurrency,
+    //             conversionRate,
+    //             amountToConvert,
+    //             date, historicalRate
+    //         };
+    //     }
+    //     catch (error) {
+    //         console.error(error)
+    //         return { error: 'Unable to fetch currencies' }
+    //     }
+    // }
 }
