@@ -171,17 +171,16 @@
 				{/if}
 				
 			</div>
-			<div class="mt-5 flex flex-col gap-5 md:flex-row">
-				<div>
+			<div class="mt-5 flex flex-row gap-5 md:flex-row">
+				<div class="w-full">
 					<label for="date" class="text-white mb-2 block">Want to check the past performance? Pick a date</label>
 						<input class="mt-3 w-full rounded-md p-1" type="date" name="date" bind:value={date} />
 				</div>
 					<button
 						formaction={`?/historical&conversion-rate=${conversionRate}`}
-						class="hidden h-6 w-6 shrink-0 self-end rounded-md bg-white p-1 hover:bg-slate-200 md:block">
+						class="h-6 w-6 shrink-0 self-end rounded-md bg-white p-1 hover:bg-slate-200">
 						<img src={time} alt="">
-						<span class="sr-only">Go back in time</span></button
-					>
+						<span class="sr-only">Go back in time</span></button>
 					{#if form?.historicalRate}
 						<p class="text-white self-end">Historical Rate: {historicalRate.toFixed(6)} ({(conversionRate - historicalRate).toFixed(6)})</p>
 						<p class="text-white"></p>
