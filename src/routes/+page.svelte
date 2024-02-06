@@ -26,9 +26,9 @@
 
 	$: targetCurrency = form?.targetCurrency ?? null;
 
-	let amountToConvert = form?.amountToConvert ?? null;
+	let amountToConvert: any = form?.amountToConvert ?? null;
 
-	$: formattedAmount = formatter.format(amountToConvert);
+	$: formattedAmount = formatter.format(Number(amountToConvert));
 
 	let convertedAmount: number | null = null;
 
@@ -135,7 +135,7 @@
 			</div>
 		</div>
 		<!-- conversion rate -->
-{#if form}
+		{#if form}
 			<p transition:blur class="mt-5 italic text-white">
 				Conversion rate: 1 {baseCurrency} = {Number(conversionRate).toFixed(6)}
 				{targetCurrency}
@@ -144,7 +144,7 @@
 		<!-- amount conversion -->
 		{#if form}
 			<div class="flex flex-col justify-between gap-6 md:flex-row">
-				<div class="mt-5">
+				<div class="mt-5 w-1/2">
 					<label for="amount-to-convert" class="mb-2 block text-white md:inline-block"
 						>Amount to convert</label
 					>
@@ -164,39 +164,31 @@
 					<div class="md:justify-end md:self-end">
 						<p class="mt-5 text-white">
 							{formattedAmount}
-							{baseCurrency} = {formatter.format(convertedAmount)}
+							{baseCurrency} = {formatter.format(Number(convertedAmount))}
 							{targetCurrency}
 						</p>
 					</div>
 				{/if}
-				
 			</div>
 			<div class="mt-5 flex flex-row gap-5 md:flex-row">
-				<div class="w-full">
-					<label for="date" class="text-white mb-2 block">Want to check the past performance? Pick a date</label>
-						<input class="mt-3 w-full rounded-md p-1" type="date" name="date" bind:value={date} />
+				<div class="w-1/2">
+					<label for="date" class="mb-2 block text-white"
+						>Want to check the past performance?</label
+					>
+					<input class="mt-3 w-full rounded-md p-1" type="date" name="date" bind:value={date} />
 				</div>
-					<button
-						formaction={`?/historical&conversion-rate=${conversionRate}`}
-						class="h-6 w-6 shrink-0 self-end rounded-md bg-white p-1 hover:bg-slate-200">
-						<img src={time} alt="">
-						<span class="sr-only">Go back in time</span></button>
-					{#if form?.historicalRate}
-						<p class="text-white self-end">Historical Rate: {historicalRate.toFixed(6)} ({(conversionRate - historicalRate).toFixed(6)})</p>
-						<p class="text-white"></p>
-					{/if}
-				</div>
+				<button
+					formaction={`?/historical&conversion-rate=${conversionRate}`}
+					class="shrink-0 self-end rounded-md bg-white p-1 hover:bg-slate-200"
+				>
+					<img src={time} alt="" class="inline" /> Go back in time
+				</button>
+			</div>
+			{#if form?.historicalRate}
+				<p class="self-end text-white mt-5">
+					Historical Rate: {historicalRate.toFixed(6)} ({conversionRate > historicalRate ? '+' : ''}{(conversionRate - historicalRate).toFixed(6)})
+				</p>
+			{/if}
 		{/if}
 	</form>
-	<!-- {#if form}
-		<form action="?/historical&base-currency=EUR&target-currency=USD" method="post" use:enhance>
-		<input hidden type="text" name="base-currency" bind:value={baseCurrency} />
-		<input hidden type="text" name="conversion-rate" bind:value={conversionRate} />
-		<input hidden type="text" name="target-currency" bind:value={targetCurrency} />
-		<input hidden type="text" name="amount-to-convert" bind:value={amountToConvert} />
-		
-		<p class="text-white">Historical rate {historicalRate}</p>
-		<button type="submit" class="w-5 bg-white text-white">button</button>
-	</form> 
-	{/if} -->
 </section>
