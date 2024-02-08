@@ -8,8 +8,6 @@
 	import { fade, scale, blur } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 
-	$: console.log(form);
-	$: console.log(conversionRate);
 	$: historicalRate = form?.historicalRate;
 	let date = form?.date ?? null;
 
@@ -38,7 +36,6 @@
 		if (!targetCurrency || !baseCurrency) {
 			return;
 		} else {
-			console.log(baseCurrency);
 			myForm.submit();
 		}
 	}
@@ -144,7 +141,7 @@
 		<!-- amount conversion -->
 		{#if form}
 			<div class="flex flex-col justify-between gap-6 md:flex-row">
-				<div class="mt-5 w-1/2">
+				<div class="mt-6 w-1/2">
 					<label for="amount-to-convert" class="mb-2 block text-white md:inline-block"
 						>Amount to convert</label
 					>
@@ -170,23 +167,30 @@
 					</div>
 				{/if}
 			</div>
-			<div class="mt-5 flex flex-row gap-5 md:flex-row">
+
+
+			<!-- Historical -->
+			<div class="mt-6 flex flex-row gap-5 md:flex-row">
 				<div class="w-1/2">
 					<label for="date" class="mb-2 block text-white"
 						>Want to check the past performance?</label
 					>
-					<input class="mt-3 w-full rounded-md p-1" type="date" name="date" bind:value={date} />
+					<input class="w-full rounded-md p-1" type="date" name="date" bind:value={date}
+					min="2000-01-01"
+					max={new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split("T")[0]}
+					/>
 				</div>
 				<button
 					formaction={`?/historical&conversion-rate=${conversionRate}`}
-					class="shrink-0 self-end rounded-md bg-white p-1 hover:bg-slate-200"
+					class="shrink-0 self-end rounded-md bg-white p-1 hover:bg-slate-200 w-1/2"
 				>
 					<img src={time} alt="" class="inline" /> Go back in time
 				</button>
 			</div>
 			{#if form?.historicalRate}
 				<p class="self-end text-white mt-5">
-					Historical Rate: {historicalRate.toFixed(6)} ({conversionRate > historicalRate ? '+' : ''}{(conversionRate - historicalRate).toFixed(6)})
+					Historical Rate: {historicalRate.toFixed(6)} ({conversionRate < historicalRate ? '+' : ''}
+					{(historicalRate - conversionRate).toFixed(6)}) compared to today
 				</p>
 			{/if}
 		{/if}
