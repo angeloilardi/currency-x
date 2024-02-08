@@ -172,10 +172,12 @@
 			<!-- Historical -->
 			<div class="mt-6 flex flex-row gap-5 md:flex-row">
 				<div class="w-1/2">
-					<label for="date" class="mb-2 block text-white"
+					<label for="date-picker" class="mb-2 block text-white"
 						>Want to check the past performance?</label
 					>
-					<input class="w-full rounded-md p-1" type="date" name="date" bind:value={date}
+					<input class="w-full rounded-md p-1" type="date" 
+					id='date-picker'
+					name="date" bind:value={date}
 					min="2000-01-01"
 					max={new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split("T")[0]}
 					/>
@@ -188,9 +190,9 @@
 				</button>
 			</div>
 			{#if form?.historicalRate}
-				<p class="self-end text-white mt-5">
-					Historical Rate: {historicalRate.toFixed(6)} ({conversionRate < historicalRate ? '+' : ''}
-					{(historicalRate - conversionRate).toFixed(6)}) compared to today
+				<p class="self-end text-white mt-5 italic">
+					Historical Rate: {historicalRate.toFixed(6)}
+					<br>({conversionRate < historicalRate ? '+' : ''}{(historicalRate - conversionRate).toFixed(6)} compared to today)
 				</p>
 			{/if}
 		{/if}
