@@ -7,11 +7,12 @@
 	import time from '$lib/images/time.svg';
 	import { fade, scale, blur } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
+	import { PUBLIC_API_KEY } from '$env/static/public';
 
 	$: historicalRate = form?.historicalRate;
 	let date = form?.date ?? null;
 
-	$: conversionRate = form?.conversionRate;
+	let conversionRate: number = 0;
 
 	const formatter = new Intl.NumberFormat(undefined, {
 		minimumFractionDigits: 2,
@@ -20,9 +21,9 @@
 
 	let myForm: HTMLFormElement;
 
-	$: baseCurrency = form?.baseCurrency ?? null;
+	let baseCurrency: string | null = null;
 
-	$: targetCurrency = form?.targetCurrency ?? null;
+	let targetCurrency: string | null = null;
 
 	let amountToConvert: any = form?.amountToConvert ?? null;
 
@@ -32,11 +33,32 @@
 
 	$: convertedAmount = amountToConvert * conversionRate;
 
-	function fetchData() {
+	async function getConversionRate(baseCurrency: string, targetCurrency: string) {
+		try {
+			const response = await fetch(
+				`https://api.freecurrencyapi.com/v1/latest?apikey=${PUBLIC_API_KEY}&currencies=${targetCurrency}&base_currency=${baseCurrency}`
+			);
+			if (!response.ok) {
+				throw new Error(`HTTP error: ${response.status}`);
+			}
+			const result = await response.json();
+
+			const conversionRate = result.data[targetCurrency];
+
+			return conversionRate;
+		} catch (error) {
+			console.error(error);
+			return { error: 'Unable to fetch currencies' };
+		}
+	}
+
+	async function fetchData() {
+		console.log(baseCurrency);
+		console.log(targetCurrency);
 		if (!targetCurrency || !baseCurrency) {
 			return;
 		} else {
-			myForm.submit();
+			conversionRate = await getConversionRate(baseCurrency, targetCurrency);
 		}
 	}
 
@@ -77,7 +99,6 @@
 
 <section class="mx-auto mt-10 md:max-w-4xl">
 	<form
-		action="?/getConversionRate"
 		id="myform"
 		method="POST"
 		class="mx-auto max-w-[80%]"
@@ -132,12 +153,44 @@
 			</div>
 		</div>
 		<!-- conversion rate -->
-		{#if form}
+		{#if conversionRate !== 0}
 			<p transition:blur class="mt-5 italic text-white">
 				Conversion rate: 1 {baseCurrency} = {Number(conversionRate).toFixed(6)}
 				{targetCurrency}
 			</p>
+			<div class="flex flex-col justify-between gap-6 md:flex-row">
+				<div class="mt-6 w-1/2">
+					<label for="amount-to-convert" class="mb-2 block text-white md:inline-block"
+						>Amount to convert</label
+					>
+					<input
+						type="text"
+						pattern="\d*"
+						maxlength="12"
+						name="amount-to-convert"
+						id="amount-to-convert"
+						autocomplete="off"
+						class="w-full rounded-md p-1"
+						bind:value={amountToConvert}
+					/>
+				</div>
+				<hr class="mt-5" />
+
+				{#if amountToConvert}
+					<div class="md:justify-end md:self-end">
+						<p class="text-white">
+							{formattedAmount}
+							{baseCurrency} = {formatter.format(Number(convertedAmount))}
+							{targetCurrency}
+						</p>
+					</div>
+				{/if}
+			</div>
+			
 		{/if}
+
+		<hr class="mt-5" />
+		
 		<!-- amount conversion -->
 		{#if form}
 			<div class="flex flex-col justify-between gap-6 md:flex-row">
@@ -159,7 +212,7 @@
 
 				{#if amountToConvert}
 					<div class="md:justify-end md:self-end">
-						<p class="mt-5 text-white">
+						<p class="text-white">
 							{formattedAmount}
 							{baseCurrency} = {formatter.format(Number(convertedAmount))}
 							{targetCurrency}
@@ -167,32 +220,39 @@
 					</div>
 				{/if}
 			</div>
-
+			<hr class="mt-5" />
 
 			<!-- Historical -->
 			<div class="mt-6 flex flex-row gap-5 md:flex-row">
-				<div class="w-1/2">
+				<div class="w-2/3">
 					<label for="date-picker" class="mb-2 block text-white"
-						>Want to check the past performance?</label
+						>Want to check the past performance?<br />
+						Pick a date</label
 					>
-					<input class="w-full rounded-md p-1" type="date" 
-					id='date-picker'
-					name="date" bind:value={date}
-					min="2000-01-01"
-					max={new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split("T")[0]}
+					<input
+						class="w-full rounded-md p-1"
+						type="date"
+						placeholder="Pick a date"
+						id="date-picker"
+						name="date"
+						bind:value={date}
+						min="2000-01-01"
+						max={new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0]}
 					/>
 				</div>
 				<button
 					formaction={`?/historical&conversion-rate=${conversionRate}`}
-					class="shrink-0 self-end rounded-md bg-white p-1 hover:bg-slate-200 w-1/2"
+					class="w-1/3 shrink-0 self-end rounded-md bg-white p-1 hover:bg-slate-200"
 				>
 					<img src={time} alt="" class="inline" /> Go back in time
 				</button>
 			</div>
 			{#if form?.historicalRate}
-				<p class="self-end text-white mt-5 italic">
+				<p class="mt-5 self-end italic text-white">
 					Historical Rate: {historicalRate.toFixed(6)}
-					<br>({conversionRate < historicalRate ? '+' : ''}{(historicalRate - conversionRate).toFixed(6)} compared to today)
+					<br />({conversionRate < historicalRate ? '+' : ''}{(
+						historicalRate - conversionRate
+					).toFixed(6)} compared to today)
 				</p>
 			{/if}
 		{/if}
